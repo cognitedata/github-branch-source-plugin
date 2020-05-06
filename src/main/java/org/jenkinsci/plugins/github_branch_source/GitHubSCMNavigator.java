@@ -960,7 +960,11 @@ public class GitHubSCMNavigator extends SCMNavigator {
                                 listener.getLogger()
                                         .println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
                                                 "Skipping repository %s because it is archived", repo.getName())));
-
+                            } else if (!repo.isPrivate() && gitHubSCMNavigatorContext.isExcludePublicRepositories()) {
+                                witness.record(repo.getName(), false);
+                                listener.getLogger()
+                                        .println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
+                                                "Skipping repository %s because it is public", repo.getName())));
                             } else if (request.process(repo.getName(), sourceFactory, null, witness)) {
                                 listener.getLogger()
                                         .println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
@@ -995,6 +999,12 @@ public class GitHubSCMNavigator extends SCMNavigator {
                             listener.getLogger()
                                     .println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
                                             "Skipping repository %s because it is archived", repo.getName())));
+
+                        } else if (!repo.isPrivate() && gitHubSCMNavigatorContext.isExcludePublicRepositories()) {
+                            witness.record(repo.getName(), false);
+                            listener.getLogger()
+                                    .println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
+                                            "Skipping repository %s because it is public", repo.getName())));
 
                         } else if (request.process(repo.getName(), sourceFactory, null, witness)) {
                             listener.getLogger().println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
@@ -1126,6 +1136,12 @@ public class GitHubSCMNavigator extends SCMNavigator {
                                         .println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
                                                 "Skipping repository %s because it is archived", repo.getName())));
 
+                            } else if (!repo.isPrivate() && gitHubSCMNavigatorContext.isExcludePublicRepositories()) {
+                                witness.record(repo.getName(), false);
+                                listener.getLogger()
+                                        .println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
+                                                "Skipping repository %s because it is public", repo.getName())));
+
                             } else if (request.process(repo.getName(), sourceFactory, null, witness)) {
                                 listener.getLogger()
                                         .println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
@@ -1152,6 +1168,12 @@ public class GitHubSCMNavigator extends SCMNavigator {
                             listener.getLogger()
                                     .println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
                                             "Skipping repository %s because it is archived", repo.getName())));
+
+                        } else if (!repo.isPrivate() && gitHubSCMNavigatorContext.isExcludePublicRepositories()) {
+                            witness.record(repo.getName(), false);
+                            listener.getLogger()
+                                    .println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
+                                            "Skipping repository %s because it is public", repo.getName())));
 
                         } else if (request.process(repo.getName(), sourceFactory, null, witness)) {
                             listener.getLogger()
@@ -1184,6 +1206,12 @@ public class GitHubSCMNavigator extends SCMNavigator {
                             listener.getLogger()
                                     .println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
                                             "Skipping repository %s because it is archived", repo.getName())));
+
+                        } else if (!repo.isPrivate() && gitHubSCMNavigatorContext.isExcludePublicRepositories()) {
+                            witness.record(repo.getName(), false);
+                            listener.getLogger()
+                                    .println(GitHubConsoleNote.create(System.currentTimeMillis(), String.format(
+                                            "Skipping repository %s because it is public", repo.getName())));
 
                         } else if (request.process(repo.getName(), sourceFactory, null, witness)) {
                             listener.getLogger()
