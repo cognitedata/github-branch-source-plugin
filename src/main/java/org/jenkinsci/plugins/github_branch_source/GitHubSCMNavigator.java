@@ -1107,7 +1107,8 @@ public class GitHubSCMNavigator extends SCMNavigator {
                 SourceFactory sourceFactory = new SourceFactory(request);
                 WitnessImpl witness = new WitnessImpl(listener);
 
-                if (!github.isAnonymous()) {
+                boolean githubAppAuthentication = credentials instanceof GitHubAppCredentials;
+                if (!github.isAnonymous() && !githubAppAuthentication) {
                     listener.getLogger()
                             .format("Connecting to %s using %s%n", apiUri == null ? GitHubSCMSource.GITHUB_URL : apiUri,
                                     CredentialsNameProvider.name(credentials));
