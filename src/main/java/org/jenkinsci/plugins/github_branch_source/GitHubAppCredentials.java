@@ -12,7 +12,10 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hudson.util.Secret;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.github.GHApp;
@@ -46,8 +49,7 @@ public class GitHubAppCredentials extends BaseStandardCredentials implements Sta
 
     private String owner;
 
-    private transient String cachedToken;
-    private transient long tokenCacheTime;
+    private transient GHAppInstallationToken cachedToken;
 
     @DataBoundConstructor
     @SuppressWarnings("unused") // by stapler
@@ -101,7 +103,7 @@ public class GitHubAppCredentials extends BaseStandardCredentials implements Sta
     }
 
     @SuppressWarnings("deprecation") // preview features are required for GitHub app integration, GitHub api adds deprecated to all preview methods
-    static String generateAppInstallationToken(String appId, String appPrivateKey, String apiUrl, String owner) {
+    static GHAppInstallationToken generateAppInstallationToken(String appId, String appPrivateKey, String apiUrl, String owner) {
         try {
             String jwtToken = createJWT(appId, appPrivateKey);
             GitHub gitHubApp = new GitHubBuilder().withEndpoint(apiUrl).withJwtToken(jwtToken).build();
@@ -126,7 +128,7 @@ public class GitHubAppCredentials extends BaseStandardCredentials implements Sta
                     .createToken(appInstallation.getPermissions())
                     .create();
 
-            return appInstallationToken.getToken();
+            return appInstallationToken;
         } catch (IOException e) {
             throw new IllegalArgumentException(String.format(ERROR_AUTHENTICATING_GITHUB_APP, appId), e);
         }
@@ -143,17 +145,24 @@ public class GitHubAppCredentials extends BaseStandardCredentials implements Sta
             apiUri = "https://api.github.com";
         }
 
-        long now = System.currentTimeMillis();
-        String appInstallationToken;
-        if (cachedToken != null && now - tokenCacheTime < JwtHelper.VALIDITY_MS /* extra buffer */ / 2) {
+        Date now = new Date(System.currentTimeMillis());
+        Date expiry = now;
+        try {
+            if (cachedToken != null) {
+                expiry = cachedToken.getExpiresAt();
+            }
+        } catch (java.io.IOException e) {
+        }
+        long TEN_MINUTES = TimeUnit.MINUTES.toMillis(10);
+        GHAppInstallationToken appInstallationToken;
+        if (cachedToken != null && ((long)(expiry.getTime() - now.getTime())) >  TEN_MINUTES) {
             appInstallationToken = cachedToken;
         } else {
             appInstallationToken = generateAppInstallationToken(appID, privateKey.getPlainText(), apiUri, owner);
             cachedToken = appInstallationToken;
-            tokenCacheTime = now;
         }
 
-        return Secret.fromString(appInstallationToken);
+        return Secret.fromString(appInstallationToken.getToken());
     }
 
     /**
